@@ -12,12 +12,6 @@ public class ServerVerticle extends AbstractVerticle {
 	
 	@Override
 	public void start(Future<Void> fut) throws Exception {
-		
-		vertx.eventBus().consumer("sample.data", message -> {
-		      System.out.println("[Worker] Consuming data in " + Thread.currentThread().getName());
-		      String body = (String) message.body();
-		      message.reply(body.toUpperCase());
-		});
 
 		Router router = Router.router(vertx);
 		router.route("/api/*").handler(BodyHandler.create());
