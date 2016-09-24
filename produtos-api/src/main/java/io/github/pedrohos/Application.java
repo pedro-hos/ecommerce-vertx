@@ -102,7 +102,7 @@ public class Application extends AbstractVerticle {
 		router.post(API_PREFIX).handler(this::create);
 		
 		router.put(API_PREFIX.concat("/:id"))
-			  .consumes(APPLICATION_JSON)
+			  .consumes("application/json")
 			  .produces(APPLICATION_JSON)
 			  .handler(this::update);
 		
@@ -215,11 +215,63 @@ public class Application extends AbstractVerticle {
 		});
 		
 	}
-	
 
-	private void update(RoutingContext routingContext) {}
+	private void update(RoutingContext routingContext) {
+		
+		final String id = routingContext.request().getParam("id");
+		final JsonObject json = routingContext.getBodyAsJson();
+		
+		if (Objects.isNull(id) || Objects.isNull(json)) {
+			routingContext.response().setStatusCode(400).end();
+			
+		} else {
+			
+			jdbc.getConnection(handler -> {
+				
+				SQLConnection connection = handler.result();
+				update(id, json, connection, (product) -> {
+					
+					if(product.succeeded()) {
+						routingContext.response().setStatusCode(201)
+												 .putHeader(CONTENT_TYPE, APPLICATION_JSON)
+												 .end(Json.encodePrettily(product.result()));;
+						
+					} else {
+						routingContext.response().setStatusCode(404).end();
+						
+					}
+					
+					connection.close();
+					
+				});
+				
+			});
+			
+		}
+	}
 	
-	private void delete(RoutingContext routingContext) {}
+	private void delete(RoutingContext routingContext) {
+		
+		 String id = routingContext.request().getParam("id");
+		 
+		    if (Objects.isNull(id)) {
+		      routingContext.response().setStatusCode(400).end();
+		      
+		    } else {
+		    	
+		      jdbc.getConnection(handler -> {
+		    	  
+		        SQLConnection connection = handler.result();
+		        String sql = "DELETE FROM PRODUCT WHERE ID ='" + id + "'";
+		        
+				connection.execute(sql, result -> {
+		              routingContext.response().setStatusCode(204).end();
+		              connection.close();
+				});
+			});
+		}
+		
+	}
 	
 	private void insert(Product product, SQLConnection connection, Handler<AsyncResult<Product>> next) {
 		
@@ -268,20 +320,30 @@ public class Application extends AbstractVerticle {
 	
 	private void update(String id, JsonObject content, SQLConnection connection, Handler<AsyncResult<Product>> resultHandler) {
 		
-		String sql = "UPDATE PRODUCT SET NAME = ?, PRICE = ?, AMOUNT = ? WHERE ID=?";
+		String sql = "UPDATE PRODUCT SET NAME = ?, PRICE = ?, AMOUNT = ? WHERE ID = ?";
 		
-		/*connection.updateWithParams(sql,
-				new JsonArray().add(content.getString("name")).add(content.getString("origin")).add(id), update -> {
-					if (update.failed()) {
-						resultHandler.handle(Future.failedFuture("Cannot update the whisky"));
+		final JsonArray params = new JsonArray().add(content.getString("name"))
+												.add(content.getFloat("price"))
+												.add(content.getInteger("amount"))
+												.add(id);
+		
+		connection.updateWithParams(sql, params, updateResult -> {
+					
+					if (updateResult.failed()) {
+						resultHandler.handle(Future.failedFuture("Cannot update the product"));
+						LOGGER.error(updateResult.cause());
 						return;
 					}
-					if (update.result().getUpdated() == 0) {
-						resultHandler.handle(Future.failedFuture("Whisky not found"));
+					
+					if (updateResult.result().getUpdated() == 0) {
+						resultHandler.handle(Future.failedFuture("Product not found"));
+						LOGGER.error(updateResult.cause());
 						return;
 					}
-					resultHandler.handle(Future.succeededFuture(
-							new Whisky(Integer.valueOf(id), content.getString("name"), content.getString("origin"))));
-				});*/
+					
+					Product product = new Product(Long.valueOf(id), content.getString("name"), content.getFloat("price"), content.getInteger("amount"));
+					resultHandler.handle(Future.succeededFuture(product));
+					
+				});
 	}
 }
