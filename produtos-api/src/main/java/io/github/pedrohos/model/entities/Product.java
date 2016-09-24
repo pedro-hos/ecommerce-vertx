@@ -9,15 +9,21 @@ public class Product {
 	private Float price;
 	private Integer amount;
 
-	public Product() {}
-	
-	public Product(JsonObject jsonObject) {
+	public Product() { }
+
+	public Product(final JsonObject jsonObject) {
 		this.id = jsonObject.getLong("ID");
 		this.name = jsonObject.getString("NAME");
 		this.price = jsonObject.getFloat("PRICE");
 		this.amount = jsonObject.getInteger("AMOUNT");
 	}
 
+	public Product(final Long id, final String name, final Float price, final Integer amount) {
+		this.id = id;
+		this.name = name;
+		this.price = price;
+		this.amount = amount;
+	}
 
 	public Long getId() {
 		return id;

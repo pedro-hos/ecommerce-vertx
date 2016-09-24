@@ -1,0 +1,12 @@
+/*C2*/SET SCHEMA PUBLIC
+SET SCHEMA PUBLIC
+CREATE TABLE "PUBLIC"."schema_version" (\u000a    "installed_rank" INT NOT NULL,\u000a    "version" VARCHAR(50),\u000a    "description" VARCHAR(200) NOT NULL,\u000a    "type" VARCHAR(20) NOT NULL,\u000a    "script" VARCHAR(1000) NOT NULL,\u000a    "checksum" INT,\u000a    "installed_by" VARCHAR(100) NOT NULL,\u000a    "installed_on" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\u000a    "execution_time" INT NOT NULL,\u000a    "success" BIT NOT NULL\u000a)
+ALTER TABLE "PUBLIC"."schema_version" ADD CONSTRAINT "schema_version_pk" PRIMARY KEY ("installed_rank")
+CREATE INDEX "PUBLIC"."schema_version_s_idx" ON "PUBLIC"."schema_version" ("success")
+LOCK TABLE "PUBLIC"."schema_version" WRITE
+INSERT INTO "schema_version" VALUES(1,'1.2','Create product table','SQL','V1_2__Create_product_table.sql',-2113034496,'SA','2016-09-23 19:09:55.190000',5,'0')
+COMMIT
+/*C3*/SET SCHEMA PUBLIC
+SET SCHEMA PUBLIC
+DISCONNECT
+/*C2*/DISCONNECT
