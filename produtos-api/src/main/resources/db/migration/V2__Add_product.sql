@@ -1,5 +1,5 @@
-INSERT INTO PRODUCT (NAME, PRICE, AMOUNT) VALUES ("PROD01", 30.1, 1);
-INSERT INTO PRODUCT (NAME, PRICE, AMOUNT) VALUES ("PROD02", 7.1, 10);
-INSERT INTO PRODUCT (NAME, PRICE, AMOUNT) VALUES ("PROD03", 50.0, 100);
-INSERT INTO PRODUCT (NAME, PRICE, AMOUNT) VALUES ("PROD04", 2.99, 0);
-INSERT INTO PRODUCT (NAME, PRICE, AMOUNT) VALUES ("PROD05", 30.10, 900);
+insert into product (name, price, stock) values ("prod01", 30.1, 1);
+insert into product (name, price, stock) values ("prod02", 7.1, 10);
+insert into product (name, price, stock) values ("prod03", 50.0, 100);
+insert into product (name, price, stock) values ("prod04", 2.99, 0);
+insert into product (name, price, stock) values ("prod05", 30.10, 900);
