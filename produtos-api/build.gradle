@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '1.2.3'
+    id 'org.flywaydb.flyway' version '4.0.3'
 }
 
 repositories {
@@ -46,4 +47,10 @@ shadowJar {
 
 task wrapper(type: Wrapper) {
   gradleVersion = '2.8'
+}
+
+flyway {
+    url = 'jdbc:mysql://localhost/ecommerce'
+    user = 'root'
+    password = 'root'
 }

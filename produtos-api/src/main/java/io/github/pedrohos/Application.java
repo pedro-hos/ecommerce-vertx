@@ -55,13 +55,9 @@ public class Application extends AbstractVerticle {
 		
 		jdbc = JDBCClient.createShared(vertx, config);
 		
-		startMigration(
-				(next) -> startBackend(
-						(connection) -> startWebApp(
-									(http) -> completeStartup(http, fut)
-								), fut));
-
-		
+		startBackend(
+				(connection) -> startWebApp(
+						(http) -> completeStartup(http, fut)), fut);
 	}
 	
 	 @Override
@@ -70,16 +66,6 @@ public class Application extends AbstractVerticle {
 		 jdbc.close();
 	}
 
-	private void startMigration(Handler<AsyncResult<Void>> next) {
-		
-		LOGGER.info("Migrate data ...");
-		
-		Flyway flyway = new Flyway();
-		flyway.setDataSource("jdbc:mysql://localhost/ecommerce", "root", "root");
-		flyway.migrate();
-		next.handle(Future.<Void>succeededFuture());
-	}
-	
 	private void startBackend(Handler<AsyncResult<SQLConnection>> next, Future<Void> fut) {
 		
 		LOGGER.info("Start backend ...");
